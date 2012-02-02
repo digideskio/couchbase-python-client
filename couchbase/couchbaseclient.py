@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-from Queue import Queue, Full, Empty
-from threading import Thread, Event, Lock
+from multiprocessing import Queue, Event, Lock, Process
+from Queue import Full, Empty
 from exception import MemcachedTimeoutException, InvalidArgumentException
 
 import logger
@@ -649,10 +649,10 @@ class VBucketAwareCouchbaseClient(object):
         self.reconfig_vbucket_map()
         self.init_vbucket_connections()
         self.dispatcher = CommandDispatcher(self)
-        self.dispatcher_thread = Thread(name="dispatcher-thread", target=self._start_dispatcher)
+        self.dispatcher_thread = Process(name="dispatcher-thread", target=self._start_dispatcher)
         self.dispatcher_thread.daemon = True
         self.dispatcher_thread.start()
-        self.streaming_thread = Thread(name="streaming", target=self._start_streaming, args=())
+        self.streaming_thread = Process(name="streaming", target=self._start_streaming, args=())
         self.streaming_thread.daemon = True
         self.streaming_thread.start()
         self.verbose = verbose
