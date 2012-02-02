@@ -15,8 +15,10 @@
 # limitations under the License.
 #
 
-from multiprocessing import Queue, Event, Lock, Process
-from Queue import Full, Empty
+from gevent.queue import Queue, Full, Empty
+from gevent.event import Event
+from gevent.coros import Semaphore as Lock
+from multiprocessing import Process
 from exception import MemcachedTimeoutException, InvalidArgumentException
 
 import logger
@@ -417,6 +419,7 @@ class MemcachedClient(object):
         except MemcachedError, e:
             if e.status != MemcachedConstants.ERR_AUTH_CONTINUE:
                 raise
+
             challenge = e.msg
 
         dig = hmac.HMAC(password, challenge).hexdigest()
